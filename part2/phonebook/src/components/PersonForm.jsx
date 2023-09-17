@@ -1,3 +1,9 @@
+const PersonInput = ({ text, value, handleChange }) => {
+  return (
+    <div>{text}<input value={value} onChange={handleChange} /></div>
+  )
+}
+
 const PersonForm = ({ persons,newName,newNumber,handleNameChange,handleNumberChange,setPersons,setNewName,setNewNumber}) => {
   const addPerson = (event) => {
     event.preventDefault()
@@ -25,8 +31,8 @@ const PersonForm = ({ persons,newName,newNumber,handleNameChange,handleNumberCha
 
   return(
     <form onSubmit={addPerson}>
-      <div>name: <input value={newName} onChange={handleNameChange} /></div>
-      <div>number: <input value={newNumber} onChange={handleNumberChange} /></div>
+      <PersonInput text='name: ' value={newName} handleChange={handleNameChange} />
+      <PersonInput text='number: ' value={newNumber} handleChange={handleNumberChange} />
       <div>
         <button type="submit">add</button>
       </div>
