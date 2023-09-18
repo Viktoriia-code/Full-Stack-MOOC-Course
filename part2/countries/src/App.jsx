@@ -6,7 +6,8 @@ const CountriesList = ({filteredCountries, filter, setCountry, weather, country}
   const showCountry = (country) => {
     setCountry(country)
   }
-
+  
+  console.log("The number of filtered countrie is: ",filteredCountries.length)
   if (country!==null && weather !==null) {
     return(
       <CountryData country={country} weather={weather} />
