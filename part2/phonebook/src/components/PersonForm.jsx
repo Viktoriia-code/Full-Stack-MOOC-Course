@@ -29,13 +29,10 @@ const PersonForm = ({ persons,newName,newNumber,handleNameChange,handleNumberCha
             }, 5000)
           })
           .catch(error => {
-            setErrorMessage(
-              `Information of ${newName} has already been removed from server`
-            )
+            setErrorMessage(error.response.data.error)
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
-            setPersons(persons.filter(person => person.name !== newName))
           })
         }
       } else {
@@ -52,6 +49,13 @@ const PersonForm = ({ persons,newName,newNumber,handleNameChange,handleNumberCha
           setMessage(`Added ${newName}`)
           setTimeout(() => {
             setMessage(null)
+          }, 5000)
+        })
+        .catch(error => {
+          // this is the way to access the error message
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
           }, 5000)
         })
     }
