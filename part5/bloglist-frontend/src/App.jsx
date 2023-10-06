@@ -16,11 +16,24 @@ const ErrorNotification = ({ errorMessage }) => {
   )
 }
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='message'>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
@@ -80,14 +93,14 @@ const App = () => {
       .create(blogObject)
         .then(returnedNote => {
         setBlogs(blogs.concat(returnedNote))
+        setMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
         setNewBlogTitle('')
         setNewBlogAuthor('')
         setNewBlogUrl('')
       })
-  }
-
-  const handleNoteChange = (event) => {
-    setNewBlog(event.target.value)
   }
 
   const blogForm = () => (
@@ -142,6 +155,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={message} />
       {user.name} logged in<button onClick={handleLogout}>logout</button>
       <h2>create new</h2>
       {blogForm()}
