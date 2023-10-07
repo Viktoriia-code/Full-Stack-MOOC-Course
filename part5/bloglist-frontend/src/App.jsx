@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/blogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
@@ -39,8 +40,7 @@ const App = () => {
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogUrl, setNewBlogUrl] = useState('')
-
-  const [blogFormVisible, setBlogFormVisible] = useState(false)
+  const noteFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -91,7 +91,7 @@ const App = () => {
       author: newBlogAuthor,
       url: newBlogUrl,
     }
-  
+    noteFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
         .then(returnedNote => {
@@ -103,7 +103,6 @@ const App = () => {
         setNewBlogTitle('')
         setNewBlogAuthor('')
         setNewBlogUrl('')
-        setBlogFormVisible(false)
       })
   }
 
@@ -137,16 +136,12 @@ const App = () => {
     )
   }
 
-  const blogForm = () => {
-    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
-    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
-
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setBlogFormVisible(true)}>new note</button>
-        </div>
-      <div style={showWhenVisible}>
+  return (
+    <div>
+      <h2>blogs</h2>
+      <Notification message={message} />
+      {user.name} logged in<button onClick={handleLogout}>logout</button>
+      <Togglable buttonLabel="new note" ref={noteFormRef}>
         <BlogForm
           newBlogTitle={newBlogTitle}
           newBlogAuthor={newBlogAuthor}
@@ -156,18 +151,7 @@ const App = () => {
           handleNewBlogUrl={({ target }) => setNewBlogUrl(target.value)}
           addBlog={addBlog}
         />
-        <button onClick={() => setBlogFormVisible(false)}>cancel</button>
-      </div>
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <h2>blogs</h2>
-      <Notification message={message} />
-      {user.name} logged in<button onClick={handleLogout}>logout</button>
-      {blogForm()}
+      </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
