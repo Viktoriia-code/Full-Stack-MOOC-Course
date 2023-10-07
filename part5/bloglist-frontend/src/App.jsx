@@ -52,9 +52,10 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-      )
+    blogService.getAll().then(blogs => {
+      const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+      setBlogs( sortedBlogs )
+    })
   }, [])
 
   const handleLogin = async (event) => {
@@ -104,9 +105,10 @@ const App = () => {
         setNewBlogAuthor('')
         setNewBlogUrl('')
         blogService.getAll()
-          .then(blogs =>
-          setBlogs( blogs )
-        )
+          .then(blogs => {
+            const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+            setBlogs( sortedBlogs )
+          })
       })
   }
 
@@ -157,7 +159,11 @@ const App = () => {
         />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog 
+          key={blog.id} 
+          blog={blog} 
+          setBlogs={setBlogs}
+          user={user} />
       )}
     </div>
   )

@@ -24,7 +24,7 @@ const BlogForm = ({
         value={newBlogUrl}
         onChange={handleNewBlogUrl}
       /><br />
-      <button type="submit">create</button>
+      <button type="submit">create new blog</button>
     </form>
    </div>
  )
