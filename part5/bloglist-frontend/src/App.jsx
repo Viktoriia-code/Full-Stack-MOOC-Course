@@ -32,7 +32,7 @@ const Notification = ({ message }) => {
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
@@ -60,7 +60,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
@@ -68,7 +68,7 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedNoteappUser', JSON.stringify(user)
-      ) 
+      )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -95,7 +95,7 @@ const App = () => {
     noteFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
-        .then(returnedNote => {
+      .then(returnedNote => {
         setBlogs(blogs.concat(returnedNote))
         setMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`)
         setTimeout(() => {
@@ -118,26 +118,26 @@ const App = () => {
         <h2>Log in to application</h2>
         <ErrorNotification errorMessage={errorMessage} />
         <form onSubmit={handleLogin}>
-        <div>
+          <div>
           username
             <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
+              type="text"
+              value={username}
+              name="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
+          <div>
           password
             <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
+              type="password"
+              value={password}
+              name="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
+          <button type="submit">login</button>
+        </form>
       </div>
     )
   }
@@ -159,9 +159,9 @@ const App = () => {
         />
       </Togglable>
       {blogs.map(blog =>
-        <Blog 
-          key={blog.id} 
-          blog={blog} 
+        <Blog
+          key={blog.id}
+          blog={blog}
           setBlogs={setBlogs}
           user={user} />
       )}

@@ -23,13 +23,12 @@ const Blog = ({ blog, setBlogs, user }) => {
     }
     blogService
       .update(blog.id, blogObject)
-        .then(() => {
+      .then(() => {
         blogService.getAll()
           .then(blogs => {
             const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
             setBlogs( sortedBlogs )
-          }
-        )
+          })
       })
   }
 
@@ -37,13 +36,12 @@ const Blog = ({ blog, setBlogs, user }) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       blogService
         .remove(id)
-          .then(() => {
+        .then(() => {
           blogService.getAll()
             .then(blogs => {
               const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
               setBlogs( sortedBlogs )
-            }
-          )
+            })
         })
     }
   }
@@ -55,16 +53,16 @@ const Blog = ({ blog, setBlogs, user }) => {
         <button onClick={() => setBlogVisible(true)}>view</button>
       </div>
       <div style={showWhenVisible}>
-      {blog.title} {blog.author}
+        {blog.title} {blog.author}
         <button onClick={() => setBlogVisible(false)}>hide</button><br />
         {blog.url}<br />
         likes {blog.likes}<button onClick={addLike}>like</button><br />
         {blog.user ? blog.user.name : 'Unknown User'}<br />
-        {blog.user && blog.user.name == user.name && (
+        {blog.user && blog.user.name === user.name && (
           <button onClick={() => deleteBlog(blog.id)}>remove</button>
         )}
       </div>
-    </div>  
+    </div>
   )
 }
 
