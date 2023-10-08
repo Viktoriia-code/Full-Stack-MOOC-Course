@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, setBlogs, user }) => {
+const Blog = ({ blog, setBlogs, user, addLike }) => {
   const [blogVisible, setBlogVisible] = useState(false)
 
   const hideWhenVisible = { display: blogVisible ? 'none' : '' }
@@ -13,23 +13,6 @@ const Blog = ({ blog, setBlogs, user }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  }
-
-  const addLike = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      ...blog,
-      likes: blog.likes+1
-    }
-    blogService
-      .update(blog.id, blogObject)
-      .then(() => {
-        blogService.getAll()
-          .then(blogs => {
-            const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-            setBlogs( sortedBlogs )
-          })
-      })
   }
 
   const deleteBlog = (id) => {
@@ -47,7 +30,7 @@ const Blog = ({ blog, setBlogs, user }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       <div style={hideWhenVisible}>
         {blog.title} {blog.author}
         <button onClick={() => setBlogVisible(true)}>view</button>
@@ -56,7 +39,7 @@ const Blog = ({ blog, setBlogs, user }) => {
         {blog.title} {blog.author}
         <button onClick={() => setBlogVisible(false)}>hide</button><br />
         {blog.url}<br />
-        likes {blog.likes}<button onClick={addLike}>like</button><br />
+        likes {blog.likes}<button onClick={() => addLike(blog)}>like</button><br />
         {blog.user ? blog.user.name : 'Unknown User'}<br />
         {blog.user && blog.user.name === user.name && (
           <button onClick={() => deleteBlog(blog.id)}>remove</button>

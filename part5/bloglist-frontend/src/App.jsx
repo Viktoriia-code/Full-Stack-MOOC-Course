@@ -112,6 +112,23 @@ const App = () => {
       })
   }
 
+  const addLike = (blog) => {
+    console.log(blog)
+    const blogObject = {
+      ...blog,
+      likes: blog.likes+1
+    }
+    blogService
+      .update(blog.id, blogObject)
+      .then(() => {
+        blogService.getAll()
+          .then(blogs => {
+            const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+            setBlogs( sortedBlogs )
+          })
+      })
+  }
+
   if (user === null) {
     return (
       <div>
@@ -163,7 +180,8 @@ const App = () => {
           key={blog.id}
           blog={blog}
           setBlogs={setBlogs}
-          user={user} />
+          user={user}
+          addLike={addLike} />
       )}
     </div>
   )
