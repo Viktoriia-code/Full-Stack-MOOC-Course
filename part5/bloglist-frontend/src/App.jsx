@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
-import BlogForm from './components/blogForm'
+import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -85,13 +85,8 @@ const App = () => {
     window.localStorage.removeItem('loggedNoteappUser')
   }
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newBlogTitle,
-      author: newBlogAuthor,
-      url: newBlogUrl,
-    }
+  const addBlog = (blogObject) => {
+
     noteFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
@@ -101,9 +96,6 @@ const App = () => {
         setTimeout(() => {
           setMessage(null)
         }, 5000)
-        setNewBlogTitle('')
-        setNewBlogAuthor('')
-        setNewBlogUrl('')
         blogService.getAll()
           .then(blogs => {
             const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
@@ -166,13 +158,7 @@ const App = () => {
       {user.name} logged in<button onClick={handleLogout}>logout</button>
       <Togglable buttonLabel="new note" ref={noteFormRef}>
         <BlogForm
-          newBlogTitle={newBlogTitle}
-          newBlogAuthor={newBlogAuthor}
-          newBlogUrl={newBlogUrl}
-          handleNewBlogTitleChange={({ target }) => setNewBlogTitle(target.value)}
-          handleNewBlogAuthor={({ target }) => setNewBlogAuthor(target.value)}
-          handleNewBlogUrl={({ target }) => setNewBlogUrl(target.value)}
-          addBlog={addBlog}
+          createBlog={addBlog}
         />
       </Togglable>
       {blogs.map(blog =>
