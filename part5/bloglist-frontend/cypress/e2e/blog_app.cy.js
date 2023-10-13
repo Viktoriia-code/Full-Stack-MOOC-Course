@@ -50,9 +50,7 @@ describe('Blog app', function() {
   describe('When logged in', function() {
     beforeEach(function() {
       // log in user here
-      cy.get('#username').type('mluukkai')
-      cy.get('#password').type('salainen')
-      cy.get('#login-button').click()
+      cy.login({ username: 'mluukkai', password: 'salainen' })
     })
 
     it('A blog can be created', function() {
@@ -71,15 +69,13 @@ describe('Blog app', function() {
   describe('When logged in and created a blog', function() {
     beforeEach(function() {
       // log in user here
-      cy.get('#username').type('mluukkai')
-      cy.get('#password').type('salainen')
-      cy.get('#login-button').click()
+      cy.login({ username: 'mluukkai', password: 'salainen' })
       // create a blog here
-      cy.contains('new note').click()
-      cy.get('#title-input').type('New blog title')
-      cy.get('#author-input').type('New blog author')
-      cy.get('#url-input').type('New blog url')
-      cy.contains('create new blog').click()
+      cy.createNote({
+        title: 'New blog title',
+        author: 'New blog author',
+        url: 'New blog url'
+      })
     })
 
     it('A user can like a blog', function() {
@@ -94,15 +90,13 @@ describe('Blog app', function() {
   describe('When logged in and created a blog', function() {
     beforeEach(function() {
       // log in user here
-      cy.get('#username').type('mluukkai')
-      cy.get('#password').type('salainen')
-      cy.get('#login-button').click()
+      cy.login({ username: 'mluukkai', password: 'salainen' })
       // create a blog here
-      cy.contains('new note').click()
-      cy.get('#title-input').type('New blog title')
-      cy.get('#author-input').type('New blog author')
-      cy.get('#url-input').type('New blog url')
-      cy.contains('create new blog').click()
+      cy.createNote({
+        title: 'New blog title',
+        author: 'New blog author',
+        url: 'New blog url'
+      })
     })
 
     it('A user can delete a blog', function() {
@@ -116,25 +110,23 @@ describe('Blog app', function() {
   describe('When 2 users logged in and created a blog', function() {
     beforeEach(function() {
       // log in user here
-      cy.get('#username').type('mluukkai')
-      cy.get('#password').type('salainen')
-      cy.get('#login-button').click()
+      cy.login({ username: 'mluukkai', password: 'salainen' })
       // create a blog here
-      cy.contains('new note').click()
-      cy.get('#title-input').type('New blog title')
-      cy.get('#author-input').type('New blog author')
-      cy.get('#url-input').type('New blog url')
-      cy.contains('create new blog').click()
+      cy.createNote({
+        title: 'New blog title',
+        author: 'New blog author',
+        url: 'New blog url'
+      })
       cy.contains('logout').click()
       cy.visit('http://localhost:5173')
-      cy.get('#username').type('new_user')
-      cy.get('#password').type('new_password')
-      cy.get('#login-button').click()
-      cy.contains('new note').click()
-      cy.get('#title-input').type('New blog title 2')
-      cy.get('#author-input').type('New blog author 2')
-      cy.get('#url-input').type('New blog url 2')
-      cy.contains('create new blog').click()
+      // log in a new user here
+      cy.login({ username: 'new_user', password: 'new_password' })
+      // create new user's blog here
+      cy.createNote({
+        title: 'New blog title 2',
+        author: 'New blog author 2',
+        url: 'New blog url 2'
+      })
     })
 
     it('A user can like a blog', function() {
@@ -143,6 +135,43 @@ describe('Blog app', function() {
 
       cy.contains('New blog title New blog author').parent().contains('remove').should('not.exist')
       cy.contains('New blog title 2 New blog author 2').parent().contains('remove')
+    })
+  })
+
+  // 5.23 A test that checks that the blogs are ordered according to likes
+  describe('When 1 user logged in and created 2 blogs', function() {
+    beforeEach(function() {
+      // log in user here
+      cy.login({ username: 'mluukkai', password: 'salainen' })
+      // create the first blog here
+      cy.createNote({
+        title: 'First title',
+        author: 'First author',
+        url: 'First url'
+      })
+      // create the second blog here
+      cy.createNote({
+        title: 'Second title',
+        author: 'Second author',
+        url: 'Second url'
+      })
+    })
+
+    it('A user can like a blog', function() {
+      cy.contains('First title First author').parent().contains('view').click()
+      cy.contains('First title First author').parent().contains('like').click()
+
+      cy.get('.blog').eq(0).should('contain', 'First title First author')
+      cy.get('.blog').eq(1).should('contain', 'Second title Second author')
+
+      cy.contains('Second title Second author').parent().contains('view').click()
+      cy.contains('Second title Second author').parent().contains('like').click()
+      cy.contains('Second title Second author').parent().contains('likes 1')
+      cy.contains('Second title Second author').parent().contains('like').click()
+      cy.contains('Second title Second author').parent().contains('likes 2')
+
+      cy.get('.blog').eq(0).should('contain', 'Second title Second author')
+      cy.get('.blog').eq(1).should('contain', 'First title First author')
     })
   })
 })
