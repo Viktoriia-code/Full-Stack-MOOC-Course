@@ -1,4 +1,4 @@
-import { filterChange } from '../reducers/filterReducer'
+import { setFilter } from '../reducers/filterReducer'
 import { useDispatch } from 'react-redux'
 
 const Filter = () => {
@@ -7,7 +7,7 @@ const Filter = () => {
   const handleChange = (event) => {
     const selectedFilter = event.target.value
     console.log(selectedFilter)
-    dispatch(filterChange(selectedFilter))
+    dispatch(setFilter(selectedFilter))
   }
   const style = {
     marginBottom: 10

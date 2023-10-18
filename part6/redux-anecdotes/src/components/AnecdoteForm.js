@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { createAnecdote } from '../reducers/anecdoteReducer'
+import { showNotification } from '../actions/notificationActions'
 
 const NewAnecdote = () => {
   const dispatch = useDispatch()
@@ -9,6 +10,7 @@ const NewAnecdote = () => {
     const content = event.target.note.value
     event.target.note.value = ''
     dispatch(createAnecdote(content))
+    dispatch(showNotification(`You created a new anecdote: "${content}"`, 5))
   }
 
   return (
