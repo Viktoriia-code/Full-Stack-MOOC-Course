@@ -1,0 +1,57 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "custom-hooks are awesome!"
+    },
+    {
+      "id": 2,
+      "content": "best feature ever <3"
+    },
+    {
+      "content": "sdfghjk",
+      "id": 3
+    },
+    {
+      "content": "sdfghj",
+      "id": 4
+    },
+    {
+      "content": "dfghjk",
+      "id": 5
+    },
+    {
+      "content": "kuku",
+      "id": 6
+    },
+    {
+      "content": "koko",
+      "id": 7
+    },
+    {
+      "content": "suomi",
+      "id": 8
+    },
+    {
+      "content": "finland",
+      "id": 9
+    }
+  ],
+  "persons": [
+    {
+      "id": 1,
+      "name": "mluukkai",
+      "number": "040-5483923"
+    },
+    {
+      "id": 2,
+      "name": "hellas",
+      "number": "012-123123"
+    },
+    {
+      "name": "koko",
+      "number": "4567890",
+      "id": 3
+    }
+  ]
+}
