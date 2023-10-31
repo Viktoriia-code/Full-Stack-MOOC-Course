@@ -2,9 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
+
+import { useDispatch } from 'react-redux'
+import { showNotification } from './actions/notificationActions'
 
 const ErrorNotification = ({ errorMessage }) => {
   if (errorMessage === null) {
@@ -14,15 +18,17 @@ const ErrorNotification = ({ errorMessage }) => {
   return <div className="error">{errorMessage}</div>
 }
 
-const Notification = ({ message }) => {
+/*const Notification = ({ message }) => {
   if (message === null) {
     return null
   }
 
   return <div className="message">{message}</div>
-}
+}*/
 
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -103,12 +109,14 @@ const App = () => {
         setBlogs(sortedBlogs)
       })
     })
+    dispatch(showNotification(`You voted for the anecdote: "${blog.title}"`, 5))
   }
 
   if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification />
         <ErrorNotification errorMessage={errorMessage} />
         <form onSubmit={handleLogin}>
           <div>
