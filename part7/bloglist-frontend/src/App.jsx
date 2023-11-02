@@ -7,7 +7,8 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
 
-import { useDispatch } from 'react-redux'
+import { initializeBlogs } from './reducers/blogReducer'
+import { useSelector, useDispatch } from 'react-redux'
 import { showNotification } from './actions/notificationActions'
 
 const ErrorNotification = ({ errorMessage }) => {
@@ -29,7 +30,7 @@ const ErrorNotification = ({ errorMessage }) => {
 const App = () => {
   const dispatch = useDispatch()
 
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -41,6 +42,14 @@ const App = () => {
   const noteFormRef = useRef()
 
   useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
+
+  const blogs = useSelector(state => {
+    return state.blogs
+  })
+
+  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -49,12 +58,12 @@ const App = () => {
     }
   }, [])
 
-  useEffect(() => {
+  /*useEffect(() => {
     blogService.getAll().then((blogs) => {
       const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
       setBlogs(sortedBlogs)
     })
-  }, [])
+  }, [])*/
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -85,16 +94,16 @@ const App = () => {
   const addBlog = (blogObject) => {
     noteFormRef.current.toggleVisibility()
     blogService.create(blogObject).then((returnedNote) => {
-      setBlogs(blogs.concat(returnedNote))
-      setMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`)
+      //setBlogs(blogs.concat(returnedNote))
       setTimeout(() => {
         setMessage(null)
       }, 5000)
       blogService.getAll().then((blogs) => {
         const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-        setBlogs(sortedBlogs)
+        //setBlogs(sortedBlogs)
       })
     })
+    dispatch(showNotification(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`, 5))
   }
 
   const addLike = (blog) => {
@@ -106,7 +115,7 @@ const App = () => {
     blogService.update(blog.id, blogObject).then(() => {
       blogService.getAll().then((blogs) => {
         const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-        setBlogs(sortedBlogs)
+        //setBlogs(sortedBlogs)
       })
     })
     dispatch(showNotification(`You voted for the anecdote: "${blog.title}"`, 5))
@@ -159,7 +168,7 @@ const App = () => {
         <Blog
           key={blog.id}
           blog={blog}
-          setBlogs={setBlogs}
+          //setBlogs={setBlogs}
           user={user}
           addLike={addLike}
         />
