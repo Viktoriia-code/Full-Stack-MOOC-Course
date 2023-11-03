@@ -7,7 +7,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
 
-import { initializeBlogs } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { showNotification } from './actions/notificationActions'
 
@@ -30,6 +30,10 @@ const ErrorNotification = ({ errorMessage }) => {
 const App = () => {
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
+
   //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -40,10 +44,6 @@ const App = () => {
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
   const [newBlogUrl, setNewBlogUrl] = useState('')
   const noteFormRef = useRef()
-
-  useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [dispatch])
 
   const blogs = useSelector(state => {
     return state.blogs
@@ -93,7 +93,7 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     noteFormRef.current.toggleVisibility()
-    blogService.create(blogObject).then((returnedNote) => {
+    /*blogService.create(blogObject).then((returnedNote) => {
       //setBlogs(blogs.concat(returnedNote))
       setTimeout(() => {
         setMessage(null)
@@ -102,8 +102,9 @@ const App = () => {
         const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
         //setBlogs(sortedBlogs)
       })
-    })
-    dispatch(showNotification(`a new blog ${newBlogTitle} by ${newBlogAuthor} added`, 5))
+    })*/
+    dispatch(createBlog(blogObject))
+    dispatch(showNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, 5))
   }
 
   const addLike = (blog) => {
@@ -112,12 +113,13 @@ const App = () => {
       ...blog,
       likes: blog.likes + 1,
     }
-    blogService.update(blog.id, blogObject).then(() => {
+    dispatch(voteBlog(blogObject))
+    /*blogService.update(blog.id, blogObject).then(() => {
       blogService.getAll().then((blogs) => {
         const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-        //setBlogs(sortedBlogs)
+        setBlogs(sortedBlogs)
       })
-    })
+    })*/
     dispatch(showNotification(`You voted for the anecdote: "${blog.title}"`, 5))
   }
 
