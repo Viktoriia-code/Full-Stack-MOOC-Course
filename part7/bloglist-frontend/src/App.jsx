@@ -6,6 +6,10 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
 
 import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
 import { setUser, clearUser } from './reducers/loginReducer'
@@ -19,6 +23,18 @@ const ErrorNotification = ({ errorMessage }) => {
 
   return <div className="error">{errorMessage}</div>
 }
+
+const Users = ({ users }) => (
+  <div>
+    <h2>Users</h2>
+    <table>
+      <tr>
+        <th></th>
+        <th>blogs created</th>
+      </tr>
+    </table>
+  </div>
+)
 
 const App = () => {
   const dispatch = useDispatch()
@@ -136,7 +152,7 @@ const App = () => {
   }
 
   return (
-    <div>
+    <Router>
       <h2>blogs</h2>
       <Notification message={message} />
       {user.name} logged in<button onClick={handleLogout}>logout</button>
@@ -151,7 +167,10 @@ const App = () => {
           addLike={addLike}
         />
       ))}
-    </div>
+      <Routes>
+        <Route path="/users" element={<Users />} />
+      </Routes>
+    </Router>
   )
 }
 
