@@ -8,6 +8,7 @@ import loginService from './services/login'
 import './index.css'
 
 import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
+import { setUser, clearUser } from './reducers/loginReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { showNotification } from './actions/notificationActions'
 
@@ -19,14 +20,6 @@ const ErrorNotification = ({ errorMessage }) => {
   return <div className="error">{errorMessage}</div>
 }
 
-/*const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-
-  return <div className="message">{message}</div>
-}*/
-
 const App = () => {
   const dispatch = useDispatch()
 
@@ -37,7 +30,7 @@ const App = () => {
   //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  //const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [newBlogTitle, setNewBlogTitle] = useState('')
@@ -53,17 +46,15 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
-  /*useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-      setBlogs(sortedBlogs)
-    })
-  }, [])*/
+  const user = useSelector(state => {
+    return state.user
+  })
+
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -73,10 +64,10 @@ const App = () => {
         username,
         password,
       })
-
+      dispatch(setUser(user))
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       blogService.setToken(user.token)
-      setUser(user)
+      //setUser(user)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -89,20 +80,12 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedNoteappUser')
+    dispatch(clearUser())
+    dispatch(showNotification('The user is logged out!', 5))
   }
 
   const addBlog = (blogObject) => {
     noteFormRef.current.toggleVisibility()
-    /*blogService.create(blogObject).then((returnedNote) => {
-      //setBlogs(blogs.concat(returnedNote))
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-      blogService.getAll().then((blogs) => {
-        const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-        //setBlogs(sortedBlogs)
-      })
-    })*/
     dispatch(createBlog(blogObject))
     dispatch(showNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, 5))
   }
@@ -114,12 +97,6 @@ const App = () => {
       likes: blog.likes + 1,
     }
     dispatch(voteBlog(blogObject))
-    /*blogService.update(blog.id, blogObject).then(() => {
-      blogService.getAll().then((blogs) => {
-        const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-        setBlogs(sortedBlogs)
-      })
-    })*/
     dispatch(showNotification(`You voted for the anecdote: "${blog.title}"`, 5))
   }
 
@@ -170,7 +147,6 @@ const App = () => {
         <Blog
           key={blog.id}
           blog={blog}
-          //setBlogs={setBlogs}
           user={user}
           addLike={addLike}
         />
