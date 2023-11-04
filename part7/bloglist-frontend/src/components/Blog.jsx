@@ -1,7 +1,10 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
+import { useDispatch } from 'react-redux'
+import { deleteBlog } from '../reducers/blogReducer'
 
 const Blog = ({ blog, setBlogs, user, addLike }) => {
+  const dispatch = useDispatch()
+
   const [blogVisible, setBlogVisible] = useState(false)
 
   const hideWhenVisible = { display: blogVisible ? 'none' : '' }
@@ -15,14 +18,15 @@ const Blog = ({ blog, setBlogs, user, addLike }) => {
     marginBottom: 5,
   }
 
-  const deleteBlog = (id) => {
+  const deleteBlogById = (id) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      blogService.remove(id).then(() => {
+      /*blogService.remove(id).then(() => {
         blogService.getAll().then((blogs) => {
           const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
           setBlogs(sortedBlogs)
         })
-      })
+      })*/
+      dispatch(deleteBlog(id))
     }
   }
 
@@ -44,7 +48,7 @@ const Blog = ({ blog, setBlogs, user, addLike }) => {
         {blog.user ? blog.user.name : 'Unknown User'}
         <br />
         {blog.user && blog.user.name === user.name && (
-          <button onClick={() => deleteBlog(blog.id)}>remove</button>
+          <button onClick={() => deleteBlogById(blog.id)}>remove</button>
         )}
       </div>
     </div>
