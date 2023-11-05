@@ -5,6 +5,7 @@ import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import usersService from './services/users'
 import './index.css'
 import {
   BrowserRouter as Router,
