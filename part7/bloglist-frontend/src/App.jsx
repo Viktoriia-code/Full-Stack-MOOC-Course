@@ -12,7 +12,7 @@ import {
   useParams, useNavigate
 } from 'react-router-dom'
 
-import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, voteBlog, commentBlog } from './reducers/blogReducer'
 import { initializeUsers } from './reducers/usersReducer'
 import { setUser, clearUser } from './reducers/loginReducer'
 import { useSelector, useDispatch } from 'react-redux'
@@ -79,10 +79,16 @@ const UserView = ({ users }) => {
   )
 }
 
-const BlogView = ({ blogs, addLike }) => {
+const BlogView = ({ blogs = [], addLike }) => {
+  const dispatch = useDispatch()
+  const [comment, setComment] = useState('')
   const id = useParams().id
   const blog = blogs.find(n => n.id === id)
-  console.log(blog)
+  const handleCommit = async (event) => {
+    event.preventDefault()
+    dispatch(commentBlog(id,comment))
+    setComment('')
+  }
   if (!blog) {
     return null
   }
@@ -93,6 +99,24 @@ const BlogView = ({ blogs, addLike }) => {
       {blog.likes} likes
       <button onClick={() => addLike(blog)}>like</button>
       <p>added by {blog.author}</p>
+      <h3>comments</h3>
+      <form onSubmit={handleCommit}>
+        <div>
+          <input
+            id="comment"
+            type="text"
+            value={comment}
+            name="Comment"
+            onChange={({ target }) => setComment(target.value)}
+          />
+        </div>
+        <button type="submit" id="login-button">
+          add comment
+        </button>
+      </form>
+      {blog.comments?.map((comment, index) => (
+        <li key={index}>{comment}</li>
+      ))}
     </div>
   )
 }
