@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { deleteBlog } from '../reducers/blogReducer'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link,
+  useParams, useNavigate
+} from 'react-router-dom'
 
 const Blog = ({ blog, setBlogs, user, addLike }) => {
   const dispatch = useDispatch()
 
-  const [blogVisible, setBlogVisible] = useState(false)
+  /*const [blogVisible, setBlogVisible] = useState(false)
 
   const hideWhenVisible = { display: blogVisible ? 'none' : '' }
-  const showWhenVisible = { display: blogVisible ? '' : 'none' }
+  const showWhenVisible = { display: blogVisible ? '' : 'none' }*/
 
   const blogStyle = {
     paddingTop: 10,
@@ -32,9 +37,9 @@ const Blog = ({ blog, setBlogs, user, addLike }) => {
 
   return (
     <div style={blogStyle} className="blog">
-      <div style={hideWhenVisible}>
-        {blog.title} {blog.author}
-        <button onClick={() => setBlogVisible(true)}>view</button>
+      {/*<div style={hideWhenVisible}>*/}
+      <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
+      {/*<button onClick={() => setBlogVisible(true)}>view</button>
       </div>
       <div style={showWhenVisible}>
         {blog.title} {blog.author}
@@ -50,7 +55,7 @@ const Blog = ({ blog, setBlogs, user, addLike }) => {
         {blog.user && blog.user.name === user.name && (
           <button onClick={() => deleteBlogById(blog.id)}>remove</button>
         )}
-      </div>
+      </div>*/}
     </div>
   )
 }

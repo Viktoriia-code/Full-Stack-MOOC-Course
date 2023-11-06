@@ -5,14 +5,15 @@ import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import usersService from './services/users'
 import './index.css'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route, Link,
+  useParams, useNavigate
 } from 'react-router-dom'
 
 import { initializeBlogs, createBlog, voteBlog } from './reducers/blogReducer'
+import { initializeUsers } from './reducers/usersReducer'
 import { setUser, clearUser } from './reducers/loginReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { showNotification } from './actions/notificationActions'
@@ -29,19 +30,99 @@ const Users = ({ users }) => (
   <div>
     <h2>Users</h2>
     <table>
-      <tr>
-        <th></th>
-        <th>blogs created</th>
-      </tr>
+      <thead>
+        <tr>
+          <th></th>
+          <th>blogs created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map((user) => (
+          <tr key={user.id}>
+            <td><Link to={`/users/${user.id}`}>{user.name}</Link></td>
+            <td>{user.blogs.length}</td>
+          </tr>
+        ))}
+      </tbody>
     </table>
   </div>
 )
+
+const Blogs = ({ blogs,user,addLike }) => (
+  <div>
+    {blogs.map((blog) => (
+      <Blog
+        key={blog.id}
+        blog={blog}
+        user={user}
+        addLike={addLike}
+      />
+    ))}
+  </div>
+)
+
+const UserView = ({ users }) => {
+  const id = useParams().id
+  const user = users.find(n => n.id === id)
+  if (!user) {
+    return null
+  }
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <ul>
+        {user.blogs.map((blog) => (
+          <li key={blog.id}>{blog.title}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+const BlogView = ({ blogs, addLike }) => {
+  const id = useParams().id
+  const blog = blogs.find(n => n.id === id)
+  console.log(blog)
+  if (!blog) {
+    return null
+  }
+  return (
+    <div>
+      <h2>{blog.title}</h2>
+      <p><a href={blog.url}>{blog.url}</a></p>
+      {blog.likes} likes
+      <button onClick={() => addLike(blog)}>like</button>
+      <p>added by {blog.author}</p>
+    </div>
+  )
+}
+
+const Menu = ({ user, handleLogout }) => {
+  const padding = {
+    paddingRight: 10
+  }
+  const bg = {
+    background: 'lightgray',
+    padding: 10
+  }
+  return (
+    <div style={bg}>
+      <Link style={padding} to='/'>blogs</Link>
+      <Link style={padding} to='/users'>users</Link>
+      {user.name} logged in<button onClick={handleLogout}>logout</button>
+    </div>
+  )
+}
 
 const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(initializeBlogs())
+  }, [dispatch])
+
+  useEffect(() => {
+    dispatch(initializeUsers())
   }, [dispatch])
 
   //const [blogs, setBlogs] = useState([])
@@ -59,6 +140,14 @@ const App = () => {
     return state.blogs
   })
 
+  const user = useSelector(state => {
+    return state.user
+  })
+
+  const users = useSelector(state => {
+    return state.users
+  })
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
@@ -67,11 +156,6 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [dispatch])
-
-  const user = useSelector(state => {
-    return state.user
-  })
-
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -154,22 +238,17 @@ const App = () => {
 
   return (
     <Router>
+      <Menu user={user} handleLogout={handleLogout} />
       <h2>blogs</h2>
       <Notification message={message} />
-      {user.name} logged in<button onClick={handleLogout}>logout</button>
       <Togglable buttonLabel="new note" ref={noteFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          user={user}
-          addLike={addLike}
-        />
-      ))}
       <Routes>
-        <Route path="/users" element={<Users />} />
+        <Route path="/" element={<Blogs blogs={blogs} user={user} addLike={addLike} />} />
+        <Route path="/users" element={<Users users={users} />} />
+        <Route path="/users/:id" element={<UserView users={users} />} />
+        <Route path="/blogs/:id" element={<BlogView blogs={blogs} addLike={addLike} />} />
       </Routes>
     </Router>
   )
