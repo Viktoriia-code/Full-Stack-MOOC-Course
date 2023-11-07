@@ -6,6 +6,7 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
+import { Table } from 'react-bootstrap'
 import {
   BrowserRouter as Router,
   Routes, Route, Link,
@@ -29,7 +30,7 @@ const ErrorNotification = ({ errorMessage }) => {
 const Users = ({ users }) => (
   <div>
     <h2>Users</h2>
-    <table>
+    <Table striped>
       <thead>
         <tr>
           <th></th>
@@ -44,7 +45,7 @@ const Users = ({ users }) => (
           </tr>
         ))}
       </tbody>
-    </table>
+    </Table>
   </div>
 )
 
@@ -131,9 +132,11 @@ const Menu = ({ user, handleLogout }) => {
   }
   return (
     <div style={bg}>
-      <Link style={padding} to='/'>blogs</Link>
-      <Link style={padding} to='/users'>users</Link>
-      {user.name} logged in<button onClick={handleLogout}>logout</button>
+      <div className="container">
+        <Link style={padding} to='/'>blogs</Link>
+        <Link style={padding} to='/users'>users</Link>
+        {user.name} logged in<button onClick={handleLogout}>logout</button>
+      </div>
     </div>
   )
 }
@@ -263,17 +266,19 @@ const App = () => {
   return (
     <Router>
       <Menu user={user} handleLogout={handleLogout} />
-      <h2>blogs</h2>
-      <Notification message={message} />
-      <Togglable buttonLabel="new note" ref={noteFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
-      <Routes>
-        <Route path="/" element={<Blogs blogs={blogs} user={user} addLike={addLike} />} />
-        <Route path="/users" element={<Users users={users} />} />
-        <Route path="/users/:id" element={<UserView users={users} />} />
-        <Route path="/blogs/:id" element={<BlogView blogs={blogs} addLike={addLike} />} />
-      </Routes>
+      <div className="container">
+        <h2>blogs</h2>
+        <Notification message={message} />
+        <Togglable buttonLabel="new note" ref={noteFormRef}>
+          <BlogForm createBlog={addBlog} />
+        </Togglable>
+        <Routes>
+          <Route path="/" element={<Blogs blogs={blogs} user={user} addLike={addLike} />} />
+          <Route path="/users" element={<Users users={users} />} />
+          <Route path="/users/:id" element={<UserView users={users} />} />
+          <Route path="/blogs/:id" element={<BlogView blogs={blogs} addLike={addLike} />} />
+        </Routes>
+      </div>
     </Router>
   )
 }
