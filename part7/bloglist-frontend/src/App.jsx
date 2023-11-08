@@ -240,7 +240,6 @@ const App = () => {
   }
 
   const addLike = (blog) => {
-    console.log(blog)
     const blogObject = {
       ...blog,
       likes: blog.likes + 1,
