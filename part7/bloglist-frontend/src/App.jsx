@@ -6,7 +6,7 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
-import { Table } from 'react-bootstrap'
+import { Table, Form, Button, Navbar, Nav, InputGroup, ListGroup } from 'react-bootstrap'
 import {
   BrowserRouter as Router,
   Routes, Route, Link,
@@ -51,14 +51,19 @@ const Users = ({ users }) => (
 
 const Blogs = ({ blogs,user,addLike }) => (
   <div>
-    {blogs.map((blog) => (
-      <Blog
-        key={blog.id}
-        blog={blog}
-        user={user}
-        addLike={addLike}
-      />
-    ))}
+    <h2>Blogs</h2>
+    <Table striped>
+      <tbody>
+        {blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            addLike={addLike}
+          />
+        ))}
+      </tbody>
+    </Table>
   </div>
 )
 
@@ -98,26 +103,26 @@ const BlogView = ({ blogs = [], addLike }) => {
       <h2>{blog.title}</h2>
       <p><a href={blog.url}>{blog.url}</a></p>
       {blog.likes} likes
-      <button onClick={() => addLike(blog)}>like</button>
+      <Button variant="success" onClick={() => addLike(blog)}>like</Button>
       <p>added by {blog.author}</p>
       <h3>comments</h3>
-      <form onSubmit={handleCommit}>
-        <div>
-          <input
-            id="comment"
-            type="text"
-            value={comment}
-            name="Comment"
-            onChange={({ target }) => setComment(target.value)}
-          />
-        </div>
-        <button type="submit" id="login-button">
+      <InputGroup className="mb-3" onSubmit={handleCommit}>
+        <Form.Control
+          id="comment"
+          type="text"
+          value={comment}
+          name="Comment"
+          onChange={({ target }) => setComment(target.value)}
+        />
+        <Button variant="secondary" type="submit" id="login-button">
           add comment
-        </button>
-      </form>
-      {blog.comments?.map((comment, index) => (
-        <li key={index}>{comment}</li>
-      ))}
+        </Button>
+      </InputGroup>
+      <ListGroup>
+        {blog.comments?.map((comment, index) => (
+          <ListGroup.Item key={index}>{comment}</ListGroup.Item>
+        ))}
+      </ListGroup>
     </div>
   )
 }
@@ -132,10 +137,26 @@ const Menu = ({ user, handleLogout }) => {
   }
   return (
     <div style={bg}>
-      <div className="container">
-        <Link style={padding} to='/'>blogs</Link>
-        <Link style={padding} to='/users'>users</Link>
-        {user.name} logged in<button onClick={handleLogout}>logout</button>
+      <div className='container'>
+        <Navbar collapseOnSelect expand="lg" data-bs-theme="light">
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to='/'>blogs</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to='/users'>users</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                {user
+                  ? <em style={padding}><span style={padding}>{user.name} logged in</span><Button variant="primary" onClick={handleLogout}>logout</Button></em>
+                  : <Link style={padding} to="/login">login</Link>
+                }
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
       </div>
     </div>
   )
@@ -230,44 +251,42 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
+      <div className='container'>
         <h2>Log in to application</h2>
         <Notification />
         <ErrorNotification errorMessage={errorMessage} />
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
+        <Form onSubmit={handleLogin}>
+          <Form.Group>
+            <Form.Label>username</Form.Label>
+            <Form.Control
               id="username"
               type="text"
               value={username}
               name="Username"
               onChange={({ target }) => setUsername(target.value)}
             />
-          </div>
-          <div>
-            password
-            <input
+            <Form.Label>password</Form.Label>
+            <Form.Control
               id="password"
               type="password"
               value={password}
               name="Password"
               onChange={({ target }) => setPassword(target.value)}
             />
-          </div>
-          <button type="submit" id="login-button">
-            login
-          </button>
-        </form>
+            <Button variant="primary" type="submit" id="login-button">
+              login
+            </Button>
+          </Form.Group>
+        </Form>
       </div>
     )
   }
 
   return (
-    <Router>
+    <Router className="main">
       <Menu user={user} handleLogout={handleLogout} />
       <div className="container">
-        <h2>blogs</h2>
+        <h1>Blog App</h1>
         <Notification message={message} />
         <Togglable buttonLabel="new note" ref={noteFormRef}>
           <BlogForm createBlog={addBlog} />
