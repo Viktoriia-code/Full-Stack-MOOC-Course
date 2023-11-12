@@ -27,12 +27,13 @@ const Authors = (props) => {
 
   const authors = result.data.allAuthors
 
+  const options = authors.map(author => ({ value: author.name, label: author.name }))
 
   const submit = async (event) => {
     event.preventDefault()
 
     console.log('update author...')
-    editAuthor({  variables: { name, setBornTo: parseInt(born) } })
+    editAuthor({  variables: { name: name.value, setBornTo: parseInt(born) } })
 
     setName('')
     setBorn('')
@@ -59,11 +60,11 @@ const Authors = (props) => {
       </table>
       <h3>Set birth year</h3>
       <form onSubmit={submit}>
-        <Select>
-          {authors.map((author) => (
-            <option key={author.name} value={author.name}>{author.name}</option>
-          ))}
-        </Select>
+        <Select
+          value={name}
+          onChange={(selectedOption) => setName(selectedOption)}
+          options={options}
+        />
         <div>
           born
           <input
