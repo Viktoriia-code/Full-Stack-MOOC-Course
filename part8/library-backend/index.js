@@ -1,6 +1,7 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
+const { GraphQLError } = require('graphql')
 
 let authors = [
   {
@@ -119,7 +120,7 @@ mongoose.connect(MONGODB_URI)
 const typeDefs = `
   type Book {
     title: String!
-    author: String!
+    author: Author!
     published: Int!
     genres: [String]! 
     id: ID!
@@ -145,7 +146,7 @@ const typeDefs = `
       author: String!
       published: Int!
       genres: [String!]!
-    ): Book
+    ): Book!
     editAuthor(
       name: String!
       setBornTo: Int!
@@ -180,12 +181,40 @@ const resolvers = {
     },
   },
   Mutation: {
-    addBook: (root, args) => {
-      const book = { ...args, id: uuid() }
-      books = books.concat(book)
-      if (!authors.find(p => p.name === book.author)) {
-        const author = { name: book.author, id: uuid() }
-        authors = authors.concat(author)
+    addBook: async (root, args) => {
+      const authorName = args.author;
+      let author = await Author.findOne({ name: authorName });
+      let newAuthor;
+      if (!author) {
+        newAuthor = new Author({
+          name: authorName,
+        });
+        authors = authors.concat(newAuthor);
+        try {
+          await newAuthor.save();
+        } catch (error) {
+          throw new GraphQLError('Saving author failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: authorName,
+              error,
+            },
+          });
+        }
+      } else {
+        newAuthor = author;
+      }
+      const book = new Book({ ...args, author: newAuthor })
+      try {
+        await book.save()
+      } catch (error) {
+        throw new GraphQLError('Saving book failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
       }
       return book
     },
