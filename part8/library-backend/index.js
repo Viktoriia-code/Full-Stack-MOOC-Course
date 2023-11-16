@@ -3,7 +3,7 @@ const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
 const { GraphQLError } = require('graphql')
 
-let authors = [
+/*let authors = [
   {
     name: 'Robert Martin',
     id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
@@ -27,7 +27,7 @@ let authors = [
     name: 'Sandi Metz', // birthyear not known
     id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
   },
-]
+]*/
 
 /*
  * Suomi:
@@ -43,7 +43,7 @@ let authors = [
  * Sin embargo, por simplicidad, almacenaremos el nombre del autor en conección con el libro
 */
 
-let books = [
+/*let books = [
   {
     title: 'Clean Code',
     published: 2008,
@@ -93,7 +93,7 @@ let books = [
     id: "afa5de04-344d-11e9-a414-719c6709cf3e",
     genres: ['classic', 'revolution']
   },
-]
+]*/
 
 /*
   you can remove the placeholder query once your first one has been implemented 
@@ -156,28 +156,41 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    bookCount: (root, args) => {
+    bookCount: async (root, args) => {
       if (!args.name) {
-        return books.length
+        return await Book.countDocuments();
       } else {
-        return books.filter(book => book.author === args.name).length
+        let author = await Author.findOne({ name: args.name })
+        return await Book.countDocuments({ author: author.id })
       }
     },
-    authorCount: () => authors.length,
-    allBooks: (root, args) => {
+    authorCount: async () => { return await Author.countDocuments() },
+    allBooks: async (root, args) => {
+      let query = {};
+
       if (args.author) {
-        return books.filter(book => book.author === args.author)
+        const author = await Author.findOne({ name: args.author });
+        query = { author: author.id };
       }
+  
       if (args.genre) {
-        return books.filter(book => book.genres.includes(args.genre))
+        query.genres = args.genre;
       }
-      return books
+  
+      const books = await Book.find(query).populate({
+        path: 'author',
+        model: 'Author',
+      });
+      return books;
     },
-    allAuthors: () => authors,
+    allAuthors: async () => {
+      return await Author.find();
+    },
   },
   Author: {
-    bookCount: (root) => {
-      return books.filter(book => book.author === root.name).length;
+    bookCount: async (root, args) => {
+      let author = await Author.findOne({ name: root.name })
+      return await Book.countDocuments({ author: author.id })
     },
   },
   Mutation: {
@@ -189,7 +202,7 @@ const resolvers = {
         newAuthor = new Author({
           name: authorName,
         });
-        authors = authors.concat(newAuthor);
+        //authors = authors.concat(newAuthor);
         try {
           await newAuthor.save();
         } catch (error) {
@@ -218,14 +231,15 @@ const resolvers = {
       }
       return book
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(p => p.name === args.name)
+    editAuthor: async (root, args) => {
+      const author = Author.find({ name: args.name })
       if (!author) {
         return null
       }
-      const updatedAuthor = { ...author, born: args.setBornTo }
-      authors = authors.map(p => p.name === args.name ? updatedAuthor : p)
-      return updatedAuthor
+      author.born = args.setBornTo
+      /*const updatedAuthor = { ...author, born: args.setBornTo }
+      authors = authors.map(p => p.name === args.name ? updatedAuthor : p)*/
+      return author.save()
     }
   }
 }
