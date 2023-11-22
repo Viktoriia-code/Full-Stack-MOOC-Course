@@ -232,14 +232,19 @@ const resolvers = {
       return book
     },
     editAuthor: async (root, args) => {
-      const author = Author.find({ name: args.name })
-      if (!author) {
+      const updatedAuthor = await Author.findOneAndUpdate(
+        { name: args.name },
+        { $set: { born: args.setBornTo } },
+        { new: true }
+      );
+      if (!updatedAuthor) {
         return null
       }
-      author.born = args.setBornTo
+      return updatedAuthor;
+      //author.born = args.setBornTo
       /*const updatedAuthor = { ...author, born: args.setBornTo }
       authors = authors.map(p => p.name === args.name ? updatedAuthor : p)*/
-      return author.save()
+      //await author.save();
     }
   }
 }
