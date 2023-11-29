@@ -13,6 +13,10 @@ const Books = (props) => {
 
   const books = result.data.allBooks
 
+  const allGenres = [...new Set(books.flatMap(book => book.genres))]
+
+  console.log(allGenres)
+
   return (
     <div>
       <h2>books</h2>
@@ -33,6 +37,9 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
+      {allGenres.map((genre, index) => (
+        <button key={index}>{genre}</button>
+      ))}
     </div>
   )
 }

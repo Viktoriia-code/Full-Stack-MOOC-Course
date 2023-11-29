@@ -24,6 +24,7 @@ const App = () => {
     localStorage.clear()
     client.resetStore()
   }
+  console.log(page)
 
   if (!token) {
     return (
@@ -40,9 +41,10 @@ const App = () => {
 
         <Books show={page === 'books'} />
 
+        <Login show={page === 'login'} setError={notify} setToken={setToken} />
+
         <NewBook show={page === 'add'} setError={notify} />
 
-        <Login show={page === 'login'} setError={notify} setToken={setToken} />
       </>
     )
   }
