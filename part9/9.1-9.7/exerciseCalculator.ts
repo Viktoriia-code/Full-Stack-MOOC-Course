@@ -22,7 +22,7 @@ const parseArguments = (args: string[]): ExerciseData => {
   
   for (let i=3; i<args.length; i++) {
     if (!isNotNumber(args[i])) {
-      daily_exercises.push(Number(args[i]))
+      daily_exercises.push(Number(args[i]));
     } else {
       throw new Error('Provided daily hours values were not numbers!');
     }
@@ -32,11 +32,11 @@ const parseArguments = (args: string[]): ExerciseData => {
     return {
       daily_exercise_hours: daily_exercises,
       target: Number(args[2])
-    }
+    };
   } else {
     throw new Error('Provided values were not numbers!');
   }
-}
+};
 
 const calculateExercises = (daily_exercise_hours: number[], target_amount: number): Result => {
 
@@ -69,14 +69,14 @@ const calculateExercises = (daily_exercise_hours: number[], target_amount: numbe
     ratingDescription: ratingDesc,
     target: target_amount,
     average: average,
-  }
-}
+  };
+};
 
 try {
   const { daily_exercise_hours, target } = parseArguments(process.argv);
-  console.log(calculateExercises(daily_exercise_hours, target))
+  console.log(calculateExercises(daily_exercise_hours, target));
 } catch (error: unknown) {
-  let errorMessage = 'Something bad happened.'
+  let errorMessage = 'Something bad happened.';
   if (error instanceof Error) {
     errorMessage += ' Error: ' + error.message;
   }
