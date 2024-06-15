@@ -9,6 +9,7 @@ app.get('/hello', (_req, res) => {
 
 app.get('/bmi', (req, res) => {
   const { height, weight } = req.query;
+  
   if (isNotNumber(height) || isNotNumber(weight) || !height || !weight) {
     return res.status(400).send({error: "malformatted parameters"})
   }
