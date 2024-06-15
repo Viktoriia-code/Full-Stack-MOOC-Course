@@ -1,6 +1,6 @@
 import { isNotNumber } from "./utils";
 
-interface ExerciseData {
+export interface ExerciseData {
   daily_exercise_hours: number[];
   target: number;
 }
@@ -38,7 +38,7 @@ const parseArguments = (args: string[]): ExerciseData => {
   }
 };
 
-const calculateExercises = (daily_exercise_hours: number[], target_amount: number): Result => {
+export const calculateExercises = (daily_exercise_hours: number[], target_amount: number): Result => {
 
   const trained_days = daily_exercise_hours.filter((daily_exercise) => daily_exercise > 0);
 
@@ -72,15 +72,15 @@ const calculateExercises = (daily_exercise_hours: number[], target_amount: numbe
   };
 };
 
-try {
-  const { daily_exercise_hours, target } = parseArguments(process.argv);
-  console.log(calculateExercises(daily_exercise_hours, target));
-} catch (error: unknown) {
-  let errorMessage = 'Something bad happened.';
-  if (error instanceof Error) {
-    errorMessage += ' Error: ' + error.message;
+if (require.main === module) {
+  try {
+    const { daily_exercise_hours, target } = parseArguments(process.argv);
+    console.log(calculateExercises(daily_exercise_hours, target));
+  } catch (error: unknown) {
+    let errorMessage = 'Something bad happened.';
+    if (error instanceof Error) {
+      errorMessage += ' Error: ' + error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }
-
-export default calculateExercises;
