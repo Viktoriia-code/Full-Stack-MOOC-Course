@@ -9,8 +9,18 @@ export const getAllDiaries = () => {
     .then(response => response.data)
 };
 
-export const createDiary = (object: NewDiaryEntry) => {
-  return axios
-    .post<DiaryEntry>(baseUrl, object)
-    .then(response => response.data)
-}
+export const createDiary = async (object: NewDiaryEntry) => {
+  try {
+    const response = await axios.post<DiaryEntry>(baseUrl, object);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response);
+      // Return a specific error message or throw a custom error
+      throw new Error((error.response?.data || 'Unknown error'));
+    } else {
+      // Handle non-Axios errors if necessary
+      throw new Error('An unexpected error occurred');
+    }
+  }
+};

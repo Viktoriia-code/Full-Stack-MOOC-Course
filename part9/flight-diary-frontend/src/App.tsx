@@ -7,6 +7,8 @@ const App = () => {
   const [newDate, setNewDate] = useState('');
   const [newVisibility, setNewVisibility] = useState('');
   const [newWeather, setNewWeather] = useState('');
+  const [newComment, setNewComment] = useState('');
+  const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
     getAllDiaries().then(data => {
@@ -14,20 +16,39 @@ const App = () => {
     })
   }, [])
 
-  const noteCreation = (event: React.SyntheticEvent) => {
-    event.preventDefault()
-    createDiary({ date: newDate, weather: newWeather, visibility: newVisibility }).then(data => {
-      setNotes(notes.concat(data))
-    })
+  const notify = (message: string) => {
+    setError(message);
+    setTimeout(() => {
+      setError('');
+    }, 3000);
+  };
 
-    setNewDate('');
-    setNewVisibility('');
-    setNewWeather('');
+  const noteCreation = async (event: React.SyntheticEvent) => {
+    event.preventDefault()
+    try {
+      const data = await createDiary({ 
+        date: newDate, 
+        weather: newWeather, 
+        visibility: newVisibility, 
+        comment: newComment 
+      });
+      setNotes(notes.concat(data));
+      // Clear input fields after successful creation
+      setNewDate('');
+      setNewVisibility('');
+      setNewWeather('');
+    } catch (error) {
+      // Handle the error appropriately in the UI
+      console.error(error);
+      // Optionally, display an error message to the user
+      notify(String(error));
+    }
   };
 
   return (
     <div>
       <h2>Add new entry</h2>
+      {error && <p style={{color: 'red'}}>{error}</p>}
       <form onSubmit={noteCreation}>
         <label>
           date
@@ -48,6 +69,13 @@ const App = () => {
           <input
             value={newWeather}
             onChange={(event) => setNewWeather(event.target.value)} 
+          />
+        </label><br />
+        <label>
+          comment
+          <input
+            value={newComment}
+            onChange={(event) => setNewComment(event.target.value)} 
           />
         </label><br />
         <button type='submit'>add</button>
