@@ -57,7 +57,7 @@ const parseOccupation = (occupation: unknown): string => {
 const toNewPatient = (object: unknown): NewPatient => {
   if ( !object || typeof object !== 'object' ) {
     throw new Error('Incorrect or missing data');
-  }
+  } 
 
   if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object)  {
     const newPatient: NewPatient = {
@@ -65,7 +65,8 @@ const toNewPatient = (object: unknown): NewPatient => {
       dateOfBirth: parseDateOfBirth(object.dateOfBirth),
       ssn: parseSsn(object.ssn),
       gender: parseGender(object.gender),
-      occupation: parseOccupation(object.occupation)
+      occupation: parseOccupation(object.occupation),
+      entries: [],
     };
 
     return newPatient;

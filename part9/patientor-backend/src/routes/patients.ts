@@ -8,6 +8,16 @@ router.get('/', (_req, res) => {
   res.send(patientService.getPatients());
 });
 
+router.get('/:id', (req, res) => {
+  const patientById = patientService.findById(req.params.id);
+
+  if (patientById) {
+    res.send(patientById);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 router.post('/', (req, res) => {
   try {
     const newPatient = toNewPatient(req.body);
