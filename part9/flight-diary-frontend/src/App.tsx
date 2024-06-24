@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { DiaryEntry } from './types';
+import { DiaryEntry, Visibility, Weather } from './types';
 import { getAllDiaries, createDiary } from './services/diaryService';
 
 const App = () => {
@@ -22,25 +22,22 @@ const App = () => {
       setError('');
     }, 3000);
   };
-
+  
   const noteCreation = async (event: React.SyntheticEvent) => {
     event.preventDefault()
     try {
       const data = await createDiary({ 
         date: newDate, 
-        weather: newWeather, 
-        visibility: newVisibility, 
+        weather: newWeather as Weather, 
+        visibility: newVisibility as Visibility, 
         comment: newComment 
       });
       setNotes(notes.concat(data));
-      // Clear input fields after successful creation
       setNewDate('');
       setNewVisibility('');
       setNewWeather('');
+      setNewComment('');
     } catch (error) {
-      // Handle the error appropriately in the UI
-      console.error(error);
-      // Optionally, display an error message to the user
       notify(String(error));
     }
   };
@@ -53,24 +50,98 @@ const App = () => {
         <label>
           date
           <input
+            type='date'
             value={newDate}
             onChange={(event) => setNewDate(event.target.value)} 
           />
-        </label><br />
-        <label>
+        </label>
+        <div style={{display: 'flex', gap: '10px'}}>
           visibility
-          <input
-            value={newVisibility}
-            onChange={(event) => setNewVisibility(event.target.value)} 
-          />
-        </label><br />
-        <label>
+          <label>
+            great
+            <input
+              onChange={() => setNewVisibility('great')}
+              type="radio"
+              name='visibility'
+              checked={newVisibility === "great"}
+            />
+          </label>
+          <label>
+            good
+            <input
+              onChange={() => setNewVisibility('good')}
+              type="radio"
+              name='visibility'
+              checked={newVisibility === "good"}
+            />
+          </label>
+          <label>
+            ok
+            <input
+              onChange={() => setNewVisibility('ok')}
+              type="radio"
+              name='visibility'
+              checked={newVisibility === "ok"}
+            />
+          </label>
+          <label>
+            poor
+            <input
+              onChange={() => setNewVisibility('poor')}
+              type="radio"
+              name='visibility'
+              checked={newVisibility === "poor"}
+            />
+          </label>
+        </div>
+        <div style={{display: 'flex', gap: '10px'}}>
           weather
-          <input
-            value={newWeather}
-            onChange={(event) => setNewWeather(event.target.value)} 
-          />
-        </label><br />
+          <label>
+            sunny
+            <input
+              type='radio'
+              name='weather'
+              onChange={() => setNewWeather('sunny')}
+              checked={newWeather === "sunny"}
+            />
+          </label>
+          <label>
+            rainy
+            <input
+              type='radio'
+              name='weather'
+              onChange={() => setNewWeather('rainy')} 
+              checked={newWeather === "rainy"}
+            />
+          </label>
+          <label>
+            cloudy
+            <input
+              type='radio'
+              name='weather'
+              onChange={() => setNewWeather('cloudy')}
+              checked={newWeather === "cloudy"}
+            />
+          </label>
+          <label>
+            stormy
+            <input
+              type='radio'
+              name='weather'
+              onChange={() => setNewWeather('stormy')}
+              checked={newWeather === "stormy"}
+            />
+          </label>
+          <label>
+            windy
+            <input
+              type='radio'
+              name='weather'
+              onChange={() => setNewWeather('windy')}
+              checked={newWeather === "windy"} 
+            />
+          </label>
+        </div>
         <label>
           comment
           <input
