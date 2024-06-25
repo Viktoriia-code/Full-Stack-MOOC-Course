@@ -38,11 +38,20 @@ const SinglePatientPage = () => {
 
   return (
     <div>
-      <div style={{ marginTop: "2rem" }}>
-        <Typography variant="h5" style={{ marginBottom: "1rem" }}>{patient.name} {genderIcons[patient.gender]}</Typography>
-        <Typography >ssh: {patient.ssn}</Typography >
-        <Typography >occupation: {patient.occupation}</Typography >
-      </div>
+      <Typography variant="h5" style={{ marginTop: "2rem", marginBottom: "1rem", fontWeight: "bold" }}>{patient.name} {genderIcons[patient.gender]}</Typography>
+      <Typography>ssh: {patient.ssn}</Typography >
+      <Typography>occupation: {patient.occupation}</Typography >
+      <Typography variant="h6" style={{ fontWeight: "bold", marginTop: "1rem" }}>entries</Typography >
+      {patient.entries?.map((entry, index) => (
+        <div key={index}>
+          <Typography>{entry.date} <span style={{ fontStyle: 'italic' }}>{entry.description}</span></Typography>
+          <ul>
+            {entry.diagnosisCodes?.map((code, index) => (
+              <li key={index}><Typography>{code}</Typography></li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 };
