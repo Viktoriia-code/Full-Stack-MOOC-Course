@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from "./types";
+import { NewPatient, Gender, Entry } from "./types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -54,19 +54,56 @@ const parseOccupation = (occupation: unknown): string => {
   return occupation;
 };
 
+const parseEntries = (entries: unknown): Entry[] => {
+  if (Array.isArray(entries)) {
+    entries.forEach((entry) => {
+      if (!('type' in entry)) {
+        throw new Error("Entry is missing 'type' field.");
+      }
+
+      if (!isString(entry.type)) {
+        throw new Error('Invalid entry type.');
+      }
+
+      parseEntryType(entry.type);
+    });
+  } else {
+    throw new Error('Invalid entries format. Expected an array.');
+  }
+  return entries as Entry[];
+};
+
+const parseEntryType = ( type: unknown ): 'HealthCheck' | 'Hospital' | 'OccupationalHealthcare' => {
+
+  if (!isString(type)) {
+    throw new Error('Incorrect or missing type');
+  }
+
+  switch (type) {
+    case 'HealthCheck':
+      return 'HealthCheck';
+    case 'Hospital':
+      return 'Hospital';
+    case 'OccupationalHealthcare':
+      return 'OccupationalHealthcare';
+    default:
+      throw new Error('Invalid type');
+  }
+};
+
 const toNewPatient = (object: unknown): NewPatient => {
   if ( !object || typeof object !== 'object' ) {
     throw new Error('Incorrect or missing data');
   } 
 
-  if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object)  {
+  if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object && 'entries' in object) {
     const newPatient: NewPatient = {
       name: parseName(object.name),
       dateOfBirth: parseDateOfBirth(object.dateOfBirth),
       ssn: parseSsn(object.ssn),
       gender: parseGender(object.gender),
       occupation: parseOccupation(object.occupation),
-      entries: [],
+      entries: parseEntries(object.entries),
     };
 
     return newPatient;
