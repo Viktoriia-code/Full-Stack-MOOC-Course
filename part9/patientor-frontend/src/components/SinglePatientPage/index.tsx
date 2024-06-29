@@ -7,6 +7,7 @@ import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import EntryDetails from './EntryDetails';
+import AddEntryForm from './AddEntryForm';
 
 const genderIcons = {
   male: <MaleIcon />,
@@ -43,9 +44,10 @@ const SinglePatientPage = ( {diagnoses}: Props ) => {
 
   return (
     <div>
-      <Typography variant="h5" style={{ marginTop: "2rem", marginBottom: "1rem", fontWeight: "bold" }}>{patient.name} {genderIcons[patient.gender]}</Typography>
+      <Typography variant="h5" style={{ marginTop: "2rem", fontWeight: "bold" }}>{patient.name} {genderIcons[patient.gender]}</Typography>
       <Typography>ssh: {patient.ssn}</Typography >
-      <Typography>occupation: {patient.occupation}</Typography >
+      <Typography style={{ marginBottom: '1rem' }}>occupation: {patient.occupation}</Typography >
+      <AddEntryForm patient={patient} />
       <Typography variant="h6" style={{ fontWeight: "bold", marginTop: "1rem" }}>entries</Typography >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {patient.entries?.map((entry, index) => (
