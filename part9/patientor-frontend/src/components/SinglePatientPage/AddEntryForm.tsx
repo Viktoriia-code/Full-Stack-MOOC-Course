@@ -1,6 +1,6 @@
-import { Alert, Button, Input, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import React, { SyntheticEvent, useState } from 'react';
-import { DiagnoseEntry, HealthCheckRating, Patient, NewEntry } from '../../types';
+import { Alert, Button, Input, InputLabel, Typography } from '@mui/material';
+import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
+import { DiagnoseEntry, Patient, NewEntry } from '../../types';
 import patientService from "../../services/patients";
 import axios from 'axios';
 
@@ -15,11 +15,11 @@ const healthCheckRatingOptions: HealthCheckRatingOption[] = Object.keys(HealthCh
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   .map(key => ({ value: HealthCheckRating[key as any], label: key }));*/
 
-const AddEntryForm: React.FC<{patient: Patient}> = ({ patient }) => {
+const AddEntryForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>;}> = ({ patient, setPatient }) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
-  const [healthCheckRating, setHealthCheckRating] = useState<HealthCheckRating>(0);
+  const [healthCheckRating, setHealthCheckRating] = useState(0);
   const [diagnosisCodes, setDiagnosisCodes] = useState<Array<DiagnoseEntry['code']>>([]);
   const [error, setError] = useState<string>('');
   
@@ -41,21 +41,21 @@ const AddEntryForm: React.FC<{patient: Patient}> = ({ patient }) => {
 
   const addEntry = async (event: SyntheticEvent) => {
     event.preventDefault();
-    console.log(values);
-    
     try {
       await patientService.addEntry(patient.id, values);
+      onCancel();
+      const newPatient = await patientService.getOne(patient.id);
+      setPatient(newPatient);
     } catch(e: unknown) {
       if (axios.isAxiosError(e)) {
         if (e?.response?.data && typeof e?.response?.data === "string") {
           const message = e.response.data.replace('Something went wrong. Error: ', '');
-          console.error(message);
           notify(message);
         } else {
           notify("Unrecognized axios error");
         }
       } else {
-        console.error("Unknown error", e);
+        //console.error("Unknown error", e);
         notify("Unknown error");
       }
     }
@@ -65,18 +65,8 @@ const AddEntryForm: React.FC<{patient: Patient}> = ({ patient }) => {
     setDescription('');
     setDate('');
     setSpecialist('');
-    setHealthCheckRating(1);
+    setHealthCheckRating(0);
     setDiagnosisCodes([]);
-  };
-
-  const onHealthCheckRatingChange = (value: unknown) => {
-    const healthCheckRating = Object.values(HealthCheckRating).find(rating => rating.toString() === value);
-
-    if (healthCheckRating !== undefined) {
-      setHealthCheckRating(Number(healthCheckRating) as HealthCheckRating);
-    } else {
-      setHealthCheckRating(0);
-    }
   };
 
   return (
@@ -111,7 +101,7 @@ const AddEntryForm: React.FC<{patient: Patient}> = ({ patient }) => {
             id="healthcheckrating-input"
             fullWidth 
             value={healthCheckRating}
-            onChange={({ target }) => setHealthCheckRating(target.value)}
+            onChange={({ target }) => setHealthCheckRating(Number(target.value))}
           />
           <InputLabel htmlFor="diagnosiscodes-input">Diagnosis Codes</InputLabel>
           <Input

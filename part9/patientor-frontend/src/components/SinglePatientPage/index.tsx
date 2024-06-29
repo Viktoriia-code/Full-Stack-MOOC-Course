@@ -31,7 +31,7 @@ const SinglePatientPage = ( {diagnoses}: Props ) => {
           setPatient(patient);
         }
       } catch (e) {
-        console.error(e);
+        //console.error(e);
       }
     };
 
@@ -47,7 +47,7 @@ const SinglePatientPage = ( {diagnoses}: Props ) => {
       <Typography variant="h5" style={{ marginTop: "2rem", fontWeight: "bold" }}>{patient.name} {genderIcons[patient.gender]}</Typography>
       <Typography>ssh: {patient.ssn}</Typography >
       <Typography style={{ marginBottom: '1rem' }}>occupation: {patient.occupation}</Typography >
-      <AddEntryForm patient={patient} />
+      <AddEntryForm patient={patient} setPatient={setPatient} />
       <Typography variant="h6" style={{ fontWeight: "bold", marginTop: "1rem" }}>entries</Typography >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {patient.entries?.map((entry, index) => (
