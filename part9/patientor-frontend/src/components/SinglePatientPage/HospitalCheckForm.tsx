@@ -1,25 +1,16 @@
 import { Alert, Button, Input, InputLabel, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
-import { DiagnoseEntry, Patient, NewEntry } from '../../types';
+import { DiagnoseEntry, Patient, NewEntry, Discharge } from '../../types';
 import patientService from "../../services/patients";
 import axios from 'axios';
 
-/*interface HealthCheckRatingOption {
-  value: string; // Use number type for enum values
-  label: string; // Use string type for enum member names
-}
-
-const healthCheckRatingOptions: HealthCheckRatingOption[] = Object.keys(HealthCheckRating)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  .filter(key => typeof HealthCheckRating[key as any] === 'number')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  .map(key => ({ value: HealthCheckRating[key as any], label: key }));*/
-
-const AddEntryForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>;}> = ({ patient, setPatient }) => {
+const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>;}> = ({ patient, setPatient }) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
+  const [dischargeDate, setDischargeDate] = useState('');
+  const [criteria, setCriteria] = useState('');
+  const discharge:Discharge = {date: dischargeDate, criteria};
   const [specialist, setSpecialist] = useState('');
-  const [healthCheckRating, setHealthCheckRating] = useState(0);
   const [diagnosisCodes, setDiagnosisCodes] = useState<Array<DiagnoseEntry['code']>>([]);
   const [error, setError] = useState<string>('');
   
@@ -28,8 +19,8 @@ const AddEntryForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAct
     date,
     specialist,
     diagnosisCodes,
-    type: 'HealthCheck',
-    healthCheckRating,
+    type: 'Hospital',
+    discharge,
   };
 
   const notify = (message: string) => {
@@ -65,7 +56,8 @@ const AddEntryForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAct
     setDescription('');
     setDate('');
     setSpecialist('');
-    setHealthCheckRating(0);
+    setDischargeDate('');
+    setCriteria('');
     setDiagnosisCodes([]);
   };
 
@@ -96,19 +88,27 @@ const AddEntryForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAct
             value={specialist}
             onChange={({ target }) => setSpecialist(target.value)}
           />
-          <InputLabel htmlFor="healthcheckrating-input">Healthcheck Rating</InputLabel>
-          <Input
-            id="healthcheckrating-input"
-            fullWidth 
-            value={healthCheckRating}
-            onChange={({ target }) => setHealthCheckRating(Number(target.value))}
-          />
           <InputLabel htmlFor="diagnosiscodes-input">Diagnosis Codes</InputLabel>
           <Input
             id="diagnosiscodes-input"
             fullWidth 
             value={diagnosisCodes}
             onChange={({ target }) => setDiagnosisCodes(target.value.split(', '))}
+          />
+          <Typography>Discharge</Typography>
+          <InputLabel htmlFor="discharge-date-input">Date</InputLabel>
+          <Input
+            id="discharge-date-input"
+            fullWidth 
+            value={date}
+            onChange={({ target }) => setDischargeDate(target.value)}
+          />
+          <InputLabel htmlFor="criteria-input">Criteria</InputLabel>
+          <Input
+            id="criteria-input"
+            fullWidth 
+            value={specialist}
+            onChange={({ target }) => setCriteria(target.value)}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 15 }}>
             <Button
@@ -133,4 +133,4 @@ const AddEntryForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAct
   );
 };
 
-export default AddEntryForm;
+export default HospitalCheckForm;
