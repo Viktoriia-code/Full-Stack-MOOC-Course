@@ -63,9 +63,9 @@ const SinglePatientPage = ( {diagnoses}: Props ) => {
         <FormControlLabel value="healthcareCheck" control={<Radio />} label="Occupational Healthcare Check" />
       </RadioGroup>
 
-      {formType === 'healthCheck' && <HealthCheckForm patient={patient} setPatient={setPatient} />}
-      {formType === 'hospitalCheck' && <HospitalCheckForm patient={patient} setPatient={setPatient} />}
-      {formType === 'healthcareCheck' && <OccupationalHealthcareForm patient={patient} setPatient={setPatient} />}
+      {formType === 'healthCheck' && <HealthCheckForm patient={patient} setPatient={setPatient} diagnoses={diagnoses} />}
+      {formType === 'hospitalCheck' && <HospitalCheckForm patient={patient} setPatient={setPatient} diagnoses={diagnoses} />}
+      {formType === 'healthcareCheck' && <OccupationalHealthcareForm patient={patient} setPatient={setPatient} diagnoses={diagnoses} />}
 
       <Typography variant="h6" style={{ fontWeight: "bold", marginTop: "1rem" }}>entries</Typography >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

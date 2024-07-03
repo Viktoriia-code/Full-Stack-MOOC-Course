@@ -1,10 +1,21 @@
-import { Alert, Button, Input, InputLabel, Typography } from '@mui/material';
+import { Alert, Button, Input, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import { DiagnoseEntry, Patient, NewEntry, Discharge } from '../../types';
 import patientService from "../../services/patients";
 import axios from 'axios';
 
-const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>;}> = ({ patient, setPatient }) => {
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>; diagnoses:DiagnoseEntry[]}> = ({ patient, setPatient, diagnoses }) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [dischargeDate, setDischargeDate] = useState('');
@@ -28,6 +39,11 @@ const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetSta
     setTimeout(() => {
       setError('');
     }, 3000);
+  };
+
+  const handleDiagnosisChange = (e: SelectChangeEvent<typeof diagnosisCodes>) => {
+    const { target: {value} } = e;
+    setDiagnosisCodes(typeof value === 'string' ? value.split(',') : value);
   };
 
   const addEntry = async (event: SyntheticEvent) => {
@@ -77,6 +93,7 @@ const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetSta
           <InputLabel htmlFor="date-input">Date</InputLabel>
           <Input
             id="date-input"
+            type="date"
             fullWidth 
             value={date}
             onChange={({ target }) => setDate(target.value)}
@@ -89,16 +106,30 @@ const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetSta
             onChange={({ target }) => setSpecialist(target.value)}
           />
           <InputLabel htmlFor="diagnosiscodes-input">Diagnosis Codes</InputLabel>
-          <Input
-            id="diagnosiscodes-input"
-            fullWidth 
+          <Select
+            label="Diagnosis codes"
+            multiple
             value={diagnosisCodes}
-            onChange={({ target }) => setDiagnosisCodes(target.value.split(', '))}
-          />
+            onChange={handleDiagnosisChange}
+            fullWidth
+            margin="dense"
+            input={<OutlinedInput id="select-multiple-chip" label="Diagnosis codes" />}
+            MenuProps={MenuProps}
+            renderValue={(selected) => selected.join(', ')}
+          >
+            {diagnoses.map(option => {
+              return <MenuItem
+                  key={option.code}
+                  value={option.code}
+                  >{option.code}: {option.name}
+                </MenuItem>;
+            })}
+          </Select>
           <Typography style={{marginTop: '1rem', marginBottom: '0.5rem'}} >Discharge</Typography>
           <InputLabel htmlFor="discharge-date-input">Date</InputLabel>
           <Input
             id="discharge-date-input"
+            type="date"
             fullWidth 
             value={date}
             onChange={({ target }) => setDischargeDate(target.value)}

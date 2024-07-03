@@ -1,21 +1,32 @@
-import { Alert, Button, Input, InputLabel, Typography } from '@mui/material';
+import { Alert, Button, Input, InputLabel, MenuItem, OutlinedInput, Select, SelectChangeEvent, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
-import { DiagnoseEntry, Patient, NewEntry } from '../../types';
+import { DiagnoseEntry, Patient, NewEntry, HealthCheckRating } from '../../types';
 import patientService from "../../services/patients";
 import axios from 'axios';
 
-/*interface HealthCheckRatingOption {
+interface HealthCheckRatingOption {
   value: string; // Use number type for enum values
   label: string; // Use string type for enum member names
 }
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 const healthCheckRatingOptions: HealthCheckRatingOption[] = Object.keys(HealthCheckRating)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   .filter(key => typeof HealthCheckRating[key as any] === 'number')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  .map(key => ({ value: HealthCheckRating[key as any], label: key }));*/
+  .map(key => ({ value: HealthCheckRating[key as any], label: key }));
 
-const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>;}> = ({ patient, setPatient }) => {
+const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>; diagnoses:DiagnoseEntry[]}> = ({ patient, setPatient, diagnoses }) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [specialist, setSpecialist] = useState('');
@@ -37,6 +48,11 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
     setTimeout(() => {
       setError('');
     }, 3000);
+  };
+
+  const handleDiagnosisChange = (e: SelectChangeEvent<typeof diagnosisCodes>) => {
+    const { target: {value} } = e;
+    setDiagnosisCodes(typeof value === 'string' ? value.split(',') : value);
   };
 
   const addEntry = async (event: SyntheticEvent) => {
@@ -85,6 +101,7 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
           <InputLabel htmlFor="date-input">Date</InputLabel>
           <Input
             id="date-input"
+            type="date"
             fullWidth 
             value={date}
             onChange={({ target }) => setDate(target.value)}
@@ -96,20 +113,37 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
             value={specialist}
             onChange={({ target }) => setSpecialist(target.value)}
           />
-          <InputLabel htmlFor="healthcheckrating-input">Healthcheck Rating</InputLabel>
-          <Input
+          <InputLabel htmlFor="healthcheckrating-input" style={{ marginTop: '0.5rem' }}>Healthcheck Rating</InputLabel>
+          <Select
             id="healthcheckrating-input"
-            fullWidth 
             value={healthCheckRating}
-            onChange={({ target }) => setHealthCheckRating(Number(target.value))}
-          />
+            onChange={({ target }) => setHealthCheckRating(target.value as HealthCheckRating)}
+            fullWidth
+          >
+            {healthCheckRatingOptions.map(option => (
+              <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+            ))}
+          </Select>
           <InputLabel htmlFor="diagnosiscodes-input">Diagnosis Codes</InputLabel>
-          <Input
-            id="diagnosiscodes-input"
-            fullWidth 
+          <Select
+            label="Diagnosis codes"
+            multiple
             value={diagnosisCodes}
-            onChange={({ target }) => setDiagnosisCodes(target.value.split(', '))}
-          />
+            onChange={handleDiagnosisChange}
+            fullWidth
+            margin="dense"
+            input={<OutlinedInput id="select-multiple-chip" label="Diagnosis codes" />}
+            MenuProps={MenuProps}
+            renderValue={(selected) => selected.join(', ')}
+          >
+            {diagnoses.map(option => {
+              return <MenuItem
+                  key={option.code}
+                  value={option.code}
+                  >{option.code}: {option.name}
+                </MenuItem>;
+            })}
+          </Select>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 15 }}>
             <Button
               color="error"
