@@ -1,25 +1,17 @@
 import { Alert, Button, Input, InputLabel, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
-import { DiagnoseEntry, Patient, NewEntry } from '../../types';
+import { DiagnoseEntry, Patient, NewEntry, SickLeave } from '../../types';
 import patientService from "../../services/patients";
 import axios from 'axios';
 
-/*interface HealthCheckRatingOption {
-  value: string; // Use number type for enum values
-  label: string; // Use string type for enum member names
-}
-
-const healthCheckRatingOptions: HealthCheckRatingOption[] = Object.keys(HealthCheckRating)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  .filter(key => typeof HealthCheckRating[key as any] === 'number')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  .map(key => ({ value: HealthCheckRating[key as any], label: key }));*/
-
-const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>;}> = ({ patient, setPatient }) => {
+const OccupationalHealthcareForm: React.FC<{patient: Patient; setPatient: Dispatch<SetStateAction<Patient | undefined>>;}> = ({ patient, setPatient }) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
+  const [employerName, setEmployerName] = useState('');
+  const [sickleaveStart, setSickleaveStart] = useState('');
+  const [sickleaveEnd, setSickleaveEnd] = useState('');
+  const sickLeave:SickLeave = {startDate: sickleaveStart, endDate: sickleaveEnd};
   const [specialist, setSpecialist] = useState('');
-  const [healthCheckRating, setHealthCheckRating] = useState(0);
   const [diagnosisCodes, setDiagnosisCodes] = useState<Array<DiagnoseEntry['code']>>([]);
   const [error, setError] = useState<string>('');
   
@@ -28,8 +20,9 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
     date,
     specialist,
     diagnosisCodes,
-    type: 'HealthCheck',
-    healthCheckRating,
+    type: 'OccupationalHealthcare',
+    employerName,
+    sickLeave
   };
 
   const notify = (message: string) => {
@@ -65,7 +58,9 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
     setDescription('');
     setDate('');
     setSpecialist('');
-    setHealthCheckRating(0);
+    setEmployerName('');
+    setSickleaveStart('');
+    setSickleaveEnd('');
     setDiagnosisCodes([]);
   };
 
@@ -73,7 +68,7 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
     <>
       {error && <Alert severity="error">{error}</Alert>}
       <div style={{border: '2px dotted black', borderRadius: "0.5rem", marginTop: "1rem", padding: "1rem"}}>
-        <Typography variant="h6" style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>New Health Check entry</Typography >
+        <Typography variant="h6" style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>New Occupational Healthcare Check entry</Typography >
         <form onSubmit={addEntry}>
           <InputLabel htmlFor="description-input">Description</InputLabel>
           <Input
@@ -96,19 +91,34 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
             value={specialist}
             onChange={({ target }) => setSpecialist(target.value)}
           />
-          <InputLabel htmlFor="healthcheckrating-input">Healthcheck Rating</InputLabel>
-          <Input
-            id="healthcheckrating-input"
-            fullWidth 
-            value={healthCheckRating}
-            onChange={({ target }) => setHealthCheckRating(Number(target.value))}
-          />
           <InputLabel htmlFor="diagnosiscodes-input">Diagnosis Codes</InputLabel>
           <Input
             id="diagnosiscodes-input"
             fullWidth 
             value={diagnosisCodes}
             onChange={({ target }) => setDiagnosisCodes(target.value.split(', '))}
+          />
+          <InputLabel htmlFor="criteria-input">Employer Name</InputLabel>
+          <Input
+            id="employerName-input"
+            fullWidth 
+            value={specialist}
+            onChange={({ target }) => setEmployerName(target.value)}
+          />
+          <Typography style={{marginTop: '1rem', marginBottom: '0.5rem'}}>Sick leave</Typography>
+          <InputLabel htmlFor="sick-leave-start-input">Start</InputLabel>
+          <Input
+            id="sick-leave-start-input"
+            fullWidth 
+            value={date}
+            onChange={({ target }) => setSickleaveStart(target.value)}
+          />
+          <InputLabel htmlFor="sick-leave-end-input">End</InputLabel>
+          <Input
+            id="sick-leave-end-input"
+            fullWidth 
+            value={date}
+            onChange={({ target }) => setSickleaveEnd(target.value)}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 15 }}>
             <Button
@@ -133,4 +143,4 @@ const HealthCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetState
   );
 };
 
-export default HealthCheckForm;
+export default OccupationalHealthcareForm;

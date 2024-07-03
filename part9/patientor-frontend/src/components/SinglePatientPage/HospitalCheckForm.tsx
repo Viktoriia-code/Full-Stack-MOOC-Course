@@ -65,7 +65,7 @@ const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetSta
     <>
       {error && <Alert severity="error">{error}</Alert>}
       <div style={{border: '2px dotted black', borderRadius: "0.5rem", marginTop: "1rem", padding: "1rem"}}>
-        <Typography variant="h6" style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>New HealthCheck entry</Typography >
+        <Typography variant="h6" style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>New Hospital Check entry</Typography >
         <form onSubmit={addEntry}>
           <InputLabel htmlFor="description-input">Description</InputLabel>
           <Input
@@ -95,7 +95,7 @@ const HospitalCheckForm: React.FC<{patient: Patient; setPatient: Dispatch<SetSta
             value={diagnosisCodes}
             onChange={({ target }) => setDiagnosisCodes(target.value.split(', '))}
           />
-          <Typography>Discharge</Typography>
+          <Typography style={{marginTop: '1rem', marginBottom: '0.5rem'}} >Discharge</Typography>
           <InputLabel htmlFor="discharge-date-input">Date</InputLabel>
           <Input
             id="discharge-date-input"
